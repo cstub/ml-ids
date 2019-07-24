@@ -13,7 +13,7 @@ To overcome this limitation research in intrusion detection systems is focusing 
 This project aims to implement a classifier capable of identifying network traffic as either benign or malicious based on machine learning and deep learning methodologies.
 
 ## Data
-The data used to train the classifier is taken from the [CSE-CIC-IDS2018](https://www.unb.ca/cic/datasets/ids-2018.html) dataset provided by the Canadian Institute for Cybersecurity. It was created by capturing all network traffic during five days of operation inside a controlled network environment on AWS where realistic background traffic and different attack scenarios were conducted.
+The data used to train the classifier is taken from the [CSE-CIC-IDS2018](https://www.unb.ca/cic/datasets/ids-2018.html) dataset provided by the Canadian Institute for Cybersecurity. It was created by capturing all network traffic during ten days of operation inside a controlled network environment on AWS where realistic background traffic and different attack scenarios were conducted.
 As a result the dataset contains both benign network traffic as well as captures of the most common network attacks.
 The dataset is comprised of the raw network captures in pcap format as well as csv files created by using [CICFlowMeter-V3](https://www.unb.ca/cic/research/applications.html#CICFlowMeter) containing 80 statistical features of the individual network flows combined with their corresponding labels.
 A network flow is defined as an aggregation of interrelated network packets identified by the following properties:
