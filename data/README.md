@@ -11,15 +11,15 @@ Due to size limitations the data provided in this repository represents only a s
 
 A prerequisite to downloading the full dataset is the installation of the [AWS CLI](https://aws.amazon.com/cli/).
 
-To download the processed csv files containing the analyzed network flows (~ 7GB) run the following command:
+To download the processed csv files containing the analyzed network flows (~7GB) run the following command:
 ```bash
 aws s3 sync --no-sign-request --region <your-region> "s3://cse-cic-ids2018/Processed Traffic Data for ML Algorithms/" <dest-dir>
 ```
-To download the raw network captures in pcap format (~ 477GB) run:
+To download the raw network captures in pcap format (~477GB) run:
 ```bash
 aws s3 sync --no-sign-request --region <your-region> "s3://cse-cic-ids2018/Original Network Traffic and Log data/" <dest-dir>
 ```
-To download the full dataset containing the raw network captures and processed csv files (~ 484GB) use the following command:
+To download the full dataset containing the raw network captures and processed csv files (~484GB) use the following command:
 ```bash
 aws s3 sync --no-sign-request --region <your-region> "s3://cse-cic-ids2018/" <dest-dir>
 ```
