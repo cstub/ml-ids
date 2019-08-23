@@ -23,3 +23,7 @@ To download the full dataset containing the raw network captures and processed c
 ```bash
 aws s3 sync --no-sign-request --region <your-region> "s3://cse-cic-ids2018/" <dest-dir>
 ```
+
+## Preprocessed Dataset
+
+The preprocessed dataset used for model training and evaluation can be found at [Google Drive](https://drive.google.com/drive/folders/1AWhRsVShJ_KvYKrV0VlnM1odtJ4Tp-uC?usp=sharing).
