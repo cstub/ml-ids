@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator","timestamp":1568299022228,"sparkVersion":"2.4.4","uid":"MulticlassClassificationEvaluator_2045e84d5752","paramMap":{"metricName":"weightedRecall","predictionCol":"prediction","labelCol":"label_is_attack"},"defaultParamMap":{"metricName":"f1","predictionCol":"prediction","labelCol":"label"}}
