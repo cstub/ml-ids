@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report, average_precision_score, precision_recall_curve
 from matplotlib.ticker import MaxNLocator
+from IPython.display import display
 
 
 def plot_hist(hist,
@@ -137,3 +138,45 @@ def plot_threshold(pred_train, pred_val, threshold, size=(15, 5), transform=iden
                  label='Validation Attack')
     ax.axvline(transform(threshold), color='red', linestyle='--')
     ax.legend()
+
+
+def get_misclassifications(y, y_true, pred):
+    misclassifications = y[y_true != pred]
+
+    mc_df = pd.merge(pd.DataFrame({'misclassified': misclassifications.label.value_counts()}),
+                     pd.DataFrame({'total': y.label.value_counts()}),
+                     how='left', left_index=True, right_index=True)
+    mc_df['percent_misclassified'] = mc_df.apply(lambda x: x[0] / x[1], axis=1)
+    return mc_df.sort_values('percent_misclassified', ascending=False)
+
+
+def print_binary_performance(y, y_true, pred, print_misclassifications=True, digits=3):
+    print('Classification Report:')
+    print('======================')
+    print(classification_report(y_true, pred, digits=digits))
+
+    print('Confusion Matrix:')
+    print('=================')
+    plot_confusion_matrix(y_true, pred, np.array(['Benign', 'Attack']), size=(5, 5))
+    plt.show()
+
+    if print_misclassifications:
+        print('Misclassifications by attack category:')
+        print('======================================')
+        mc_df = get_misclassifications(y, y_true, pred)
+        display(mc_df)
+
+
+def plot_pr_curve(y_true, y_score, size=(8, 5), average='weighted'):
+    precisions, recalls, _ = precision_recall_curve(y_true, y_score)
+    pr_auc = average_precision_score(y_true, y_score, average=average)
+
+    plt.figure(figsize=size)
+    plt.plot(recalls, precisions, label='auc={}'.format(pr_auc))
+    plt.title('Precision / Recall Curve')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.legend(loc='lower left')
+    plt.show()
+
+    print('Average PR Score {}'.format(pr_auc))
