@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -18,7 +17,6 @@ def remove_outliers(df: pd.DataFrame, zscore: int = 3) -> pd.DataFrame:
     :param zscore: z-score to use when calculating outliers.
     :return: The DataFrame with all outliers removed.
     """
-
     scores = (df - df.mean()) / df.std(ddof=0).values
     return df[(np.abs(scores) < zscore).all(axis=1)]
 
@@ -47,7 +45,6 @@ def create_pipeline(df: pd.DataFrame,
     :return: A tuple containing the pipeline and a function returning the columns names after the pipeline has been
              fitted.
     """
-
     def create_get_feature_names(p, imp, scl, cat):
         def get_feature_names():
             if not hasattr(p, 'transformers_'):

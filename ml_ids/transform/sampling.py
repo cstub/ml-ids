@@ -21,7 +21,6 @@ def upsample_minority_classes(X: np.ndarray,
     :param n_jobs: Number of threads to use.
     :return: A tuple containing the up-sampled X and y values.
     """
-
     cnts = y.label_cat.value_counts()
     sample_dict = {}
 
@@ -51,7 +50,6 @@ def create_sample_dict(df: pd.DataFrame,
     :param samples_per_label: Number of samples for specific labels.
     :return: Dictionary containing the number of samples per label.
     """
-
     if samples_per_label is None:
         samples_per_label = {}
 
@@ -78,7 +76,6 @@ def downsample(df: pd.DataFrame,
     :param random_state: Random state.
     :return: The downsampled DataFrame.
     """
-
     if samples_per_label is None:
         samples_per_label = {}
 

@@ -103,3 +103,14 @@ LABEL_CAT_MAPPING = {
     'Heartbleed': 16,
     'PortScan': 17
 }
+
+FEATURES_NO_VARIANCE = [
+    "bwd_blk_rate_avg",
+    "bwd_byts_b_avg",
+    "bwd_pkts_b_avg",
+    "bwd_psh_flags",
+    "bwd_urg_flags",
+    "fwd_blk_rate_avg",
+    "fwd_byts_b_avg",
+    "fwd_pkts_b_avg"
+]

@@ -3,6 +3,7 @@ import pandas as pd
 import gc
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_recall_curve
 from tensorflow.keras.utils import to_categorical
 from tensorflow import keras
 from typing import Tuple, List
@@ -26,7 +27,6 @@ def train_val_test_split(df: pd.DataFrame,
     :param random_state: Random state.
     :return: A triple containing (`train`, `val`, `test`) sets.
     """
-
     assert (val_size + test_size) < 1, 'Sum of validation and test size must not be > 1.'
 
     df_stratify = df[stratify_col] if stratify_col else None
@@ -53,7 +53,6 @@ def split_x_y(df: pd.DataFrame, y_cols: List[str] = None) -> Tuple[pd.DataFrame,
     :param y_cols: Columns to use in the labels DataFrame `y`.
     :return: A tuple containing the DataFrames (`X`, `y`).
     """
-
     if y_cols is None:
         y_cols = ['label', 'label_cat', 'label_is_attack']
     return df.drop(columns=y_cols), df[y_cols]
@@ -77,7 +76,6 @@ def cross_val_train(fit_fn,
     :param random_state: Random state.
     :return: A triple containing the cross-validation predictions, the true values and a list of history-objects.
     """
-
     if fit_args is None:
         fit_args = {}
 
@@ -113,3 +111,17 @@ def cross_val_train(fit_fn,
         fold = fold + 1
 
     return cv_predictions, cv_y_true, hists
+
+
+def best_precision_for_target_recall(y_true, y_pred_score, target_recall):
+    """
+    Determines the decision boundary for the best precision given a specified target recall by using
+    the precision-recall curve.
+
+    :param y_true: True labels.
+    :param y_pred_score: Predicted labels.
+    :param target_recall: Target recall.
+    :return: Decision boundary.
+    """
+    precisions, recalls, thresholds = precision_recall_curve(y_true, y_pred_score)
+    return thresholds[np.argmin(recalls >= target_recall)]
