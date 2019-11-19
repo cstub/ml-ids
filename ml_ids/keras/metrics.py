@@ -12,7 +12,6 @@ class AveragePrecisionScoreMetric(callbacks.Callback):
     Keras callback calculating the average precision score for a given validation dataset using the
     `average_precision_score` metric from Scikit-learn.
     """
-
     def __init__(self, X_val, y_val, batch_size=4096):
         super(AveragePrecisionScoreMetric, self).__init__()
         self.X_val = X_val

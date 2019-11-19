@@ -9,7 +9,6 @@ class OneCycleScheduler(callbacks.Callback):
     Keras callback implementing a one-cycle learning-rate scheduler.
     Provided by https://github.com/ageron/handson-ml2/blob/master/11_training_deep_neural_networks.ipynb.
     """
-
     def __init__(self, iterations, max_rate, start_rate=None,
                  last_iterations=None, last_rate=None):
         self.iterations = iterations

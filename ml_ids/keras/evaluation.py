@@ -1,18 +1,21 @@
 PREDICT_BATCH_SIZE = 16384
 
 
-def predict(model, X, decision_boundary=0.5):
-    pred = model.predict(X, batch_size=PREDICT_BATCH_SIZE)
-    return (pred >= decision_boundary).astype('int').reshape(-1)
+def evaluate_model(model, X_train, y_train, X_val, y_val, metric_title):
+    """
+    Prints the performance metrics of a Keras model by invoking the `evaluate` function of the model on the training
+    and validation dataset.
 
-
-def predict_score(model, X):
-    return model.predict(X, batch_size=PREDICT_BATCH_SIZE).reshape(-1)
-
-
-def evaluate_model(model, X_train, y_train, X_val, y_val):
+    :param model: Keras model.
+    :param X_train: Predictor variables of the training dataset.
+    :param y_train: Target labels of the training dataset.
+    :param X_val: Predictor variables of the validation dataset.
+    :param y_val: Target labels of the validation dataset.
+    :param metric_title: Title of the metrics.
+    :return: None
+    """
     print('Evaluation:')
     print('===========')
-    print('       Loss / PR AUC / Precision / Recall')
+    print('       {}'.format(metric_title))
     print('Train: {}'.format(model.evaluate(X_train, y_train, batch_size=PREDICT_BATCH_SIZE, verbose=0)))
     print('Val:   {}'.format(model.evaluate(X_val, y_val, batch_size=PREDICT_BATCH_SIZE, verbose=0)))

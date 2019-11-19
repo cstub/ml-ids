@@ -27,7 +27,6 @@ def remove_negative_values(df: pd.DataFrame, ignore_cols: List[str] = None) -> p
     :param ignore_cols: Columns to ignore. Negative values in this columns will be preserved.
     :return: The DataFrame without negative values.
     """
-
     if ignore_cols is None:
         ignore_cols = []
 
@@ -47,7 +46,6 @@ def add_label_category_column(df: pd.DataFrame) -> pd.DataFrame:
     :param df: Input DataFrame.
     :return: The DataFrame containing a new column `label_cat`.
     """
-
     df['label_cat'] = df.label.apply(lambda l: LABEL_CAT_MAPPING[l])
     return df
 
@@ -60,7 +58,6 @@ def add_label_is_attack_columns(df: pd.DataFrame) -> pd.DataFrame:
     :param df: Input DataFrame.
     :return: The DataFrame containing a new column `label_is_attack`.
     """
-
     df['label_is_attack'] = df.label.apply(lambda l: 0 if l == LABEL_BENIGN else 1)
     return df
 
@@ -82,7 +79,6 @@ def load_dataset(dataset_path: str,
     :param preserve_neg_value_cols: Columns in which negative values are preserved.
     :return: The dataset as a DataFrame.
     """
-
     cols = None
     if use_cols:
         cols = use_cols
