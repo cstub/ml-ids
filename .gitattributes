@@ -1,2 +1,4 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
 *.catboost filter=lfs diff=lfs merge=lfs -text
+*.h5 filter=lfs diff=lfs merge=lfs -text
+*.cbm filter=lfs diff=lfs merge=lfs -text
