@@ -4,7 +4,6 @@ import gc
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_curve
-from tensorflow.keras.utils import to_categorical
 from tensorflow import keras
 from typing import Tuple, List
 
@@ -61,6 +60,8 @@ def split_x_y(df: pd.DataFrame, y_cols: List[str] = None) -> Tuple[pd.DataFrame,
 def cross_val_train(fit_fn,
                     X: np.ndarray,
                     y: np.ndarray,
+                    target_transform_fn=id,
+                    target_stratify_fn=id,
                     n_splits: int = 3,
                     fit_args: dict = None,
                     random_state: int = None) -> Tuple[np.ndarray, np.ndarray, list]:
@@ -71,6 +72,8 @@ def cross_val_train(fit_fn,
                    Keras model with its history.
     :param X: Predictor variables.
     :param y: Labels.
+    :param target_transform_fn: Function to transform the target labels (e.g. one-hot encoding).
+    :param target_stratify_fn: Function to extract the target label to stratify by.
     :param n_splits: Number of cross-validation splits.
     :param fit_args: Arguments to pass to the fit function.
     :param random_state: Random state.
@@ -81,33 +84,41 @@ def cross_val_train(fit_fn,
 
     kfold = StratifiedKFold(n_splits=n_splits, random_state=random_state)
 
-    cv_predictions = np.empty((0, np.max(y) + 1))
-    cv_y_true = np.array([])
+    cv_predictions = None
+    cv_y_true = None
     hists = []
     fold = 1
 
-    for train_index, val_index in kfold.split(X, y):
+    for train_index, val_index in kfold.split(X, target_stratify_fn(y)):
         print('\nFold {}/{}:'.format(fold, n_splits))
         print('==========')
 
         X_train, X_val = X[train_index], X[val_index]
         y_train, y_val = y[train_index], y[val_index]
 
-        y_train_one_hot = to_categorical(y_train)
-        y_val_one_hot = to_categorical(y_val)
+        y_train_ = target_transform_fn(y_train)
+        y_val_ = target_transform_fn(y_val)
 
         keras.backend.clear_session()
         gc.collect()
 
-        model, hist = fit_fn(X_train, y_train_one_hot, X_val, y_val_one_hot, fit_args, (fold == 1))
+        model, hist = fit_fn(X_train, y_train_, X_val, y_val_, fit_args, (fold == 1))
 
         if isinstance(hist, list):
             hists.extend(hist)
         else:
             hists.append(hist)
 
-        cv_predictions = np.append(cv_predictions, model.predict(X_val), axis=0)
-        cv_y_true = np.append(cv_y_true, y_val, axis=0)
+        if cv_predictions is not None:
+            cv_predictions = np.append(cv_predictions, model.predict(X_val), axis=0)
+        else:
+            cv_predictions = model.predict(X_val)
+
+        if cv_y_true is not None:
+            cv_y_true = np.append(cv_y_true, y_val, axis=0)
+        else:
+            cv_y_true = y_val
+
         fold = fold + 1
 
     return cv_predictions, cv_y_true, hists
