@@ -1,0 +1,10 @@
+{
+  "task_type": "GPU",
+  "use_val_set": true,
+  "nr_iterations": 2000,
+  "tree_depth": 10,
+  "l2_reg": 4.813919374945952,
+  "border_count": 254,
+  "random_strength": 5,
+  "nr_samples_attack_category": 100000
+}

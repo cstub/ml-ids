@@ -1,0 +1,12 @@
+{
+  "deploy": {
+    "app_name": "ml-ids-classifier",
+    "instance_type": "ml.t2.medium",
+    "instance_count": 1,
+    "region": "eu-west-1"
+  },
+  "role": "arn:aws:iam::763816190631:role/service-role/AmazonSageMaker-ExecutionRole-20191125T215860",
+  "model_bucket": "s3://sagemaker-eu-west-1-763816190631",
+  "model_artifact": "model.tar.gz",
+  "model_name": "ml-ids-gb_mlflow_pyfunc"
+}

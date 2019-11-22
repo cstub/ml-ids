@@ -1,0 +1,14 @@
+{
+  "train": {
+    "instance_type": "ml.p2.xlarge",
+    "instance_count": 1,
+    "task_type": "GPU"
+  },
+  "role": "arn:aws:iam::763816190631:role/service-role/AmazonSageMaker-ExecutionRole-20191125T215860",
+  "data": {
+    "train": "s3://ml-ids-2018-full/training",
+    "val": "s3://ml-ids-2018-full/validation",
+    "test": "s3://ml-ids-2018-full/testing"
+  },
+  "model_bucket": "s3://sagemaker-eu-west-1-763816190631"
+}

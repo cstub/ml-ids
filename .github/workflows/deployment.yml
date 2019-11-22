@@ -1,0 +1,53 @@
+name: Deploy Model on AWS Sagemaker
+
+on:
+  deployment
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set Tag in Environment
+      id: set-aws-tag
+      run: |
+        if [ -z "$GITHUB_REF" ]
+        then
+          echo "No Tag given. Workflow may only be run on tagged commits."
+          exit 1
+        fi
+        echo "::set-output name=awstag::$(echo ${GITHUB_REF:10} | sed 's/[^a-zA-Z0-9]/-/g')"
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install click==7.0
+        pip install boto3==1.10.28
+        pip install mlflow==1.4.0
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Deploy model on AWS Sagemaker
+      id: deploy-model
+      env:
+        AWS_TAG: ${{ steps.set-aws-tag.outputs.awstag }}
+      run: |
+        make sagemaker_deploy JOB_ID="ml-ids-sagemaker-$AWS_TAG"

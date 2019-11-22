@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import glob
 import os
+import ml_ids.data.metadata as md
 from typing import List
-from ml_ids.data.metadata import COLUMN_DTYPES, LABEL_BENIGN, LABEL_CAT_MAPPING
 
 
 def remove_inf_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -46,7 +46,7 @@ def add_label_category_column(df: pd.DataFrame) -> pd.DataFrame:
     :param df: Input DataFrame.
     :return: The DataFrame containing a new column `label_cat`.
     """
-    df['label_cat'] = df.label.apply(lambda l: LABEL_CAT_MAPPING[l])
+    df[md.COLUMN_LABEL_CAT] = df.label.apply(lambda l: md.LABEL_CAT_MAPPING[l])
     return df
 
 
@@ -58,24 +58,27 @@ def add_label_is_attack_columns(df: pd.DataFrame) -> pd.DataFrame:
     :param df: Input DataFrame.
     :return: The DataFrame containing a new column `label_is_attack`.
     """
-    df['label_is_attack'] = df.label.apply(lambda l: 0 if l == LABEL_BENIGN else 1)
+    df[md.COLUMN_LABEL_IS_ATTACK] = df.label.apply(lambda l: 0 if l == md.LABEL_BENIGN else 1)
     return df
 
 
-def load_dataset(dataset_path: str,
-                 use_cols: List[str] = None,
-                 omit_cols: List[str] = None,
-                 nrows: int = None,
-                 preserve_neg_value_cols: list = None) -> pd.DataFrame:
+def load_dataset_generic(load_df_fn,
+                         dataset_path: str,
+                         use_cols: List[str] = None,
+                         omit_cols: List[str] = None,
+                         preserve_neg_value_cols: list = None,
+                         transform_data: bool = True) -> pd.DataFrame:
     """
-    Loads the dataset from the given path.
+    Loads the dataset from the given path using the supplied function.
     All invalid values (`np.inf`, `-np.inf`, negative) are removed and replaced with `null` for easy imputation.
     Negative values of columns specified in `preserve_neg_value_cols` will be preserved.
 
+    :param load_df_fn: Function used to load the dataset.
     :param dataset_path: Path of the base directory containing all files of the dataset.
     :param use_cols: Columns to load.
     :param omit_cols: Columns to omit.
     :param nrows: Number of rows to load per file.
+    :param transform_data: Indicates if data should be manipulated (removal of invalid and negative values).
     :param preserve_neg_value_cols: Columns in which negative values are preserved.
     :return: The dataset as a DataFrame.
     """
@@ -83,17 +86,77 @@ def load_dataset(dataset_path: str,
     if use_cols:
         cols = use_cols
     if omit_cols:
-        cols = [c for c in COLUMN_DTYPES.keys() if c not in omit_cols]
+        cols = [c for c in md.COLUMN_DTYPES.keys() if c not in omit_cols]
 
-    files = glob.glob(os.path.join(dataset_path, '*.csv'))
+    df = load_df_fn(dataset_path, cols)
 
-    df = pd.concat([pd.read_csv(f, dtype=COLUMN_DTYPES, usecols=cols, nrows=nrows) for f in files])
+    if transform_data:
+        df = remove_inf_values(df)
+        df = remove_negative_values(df, preserve_neg_value_cols)
 
-    df = remove_inf_values(df)
-    df = remove_negative_values(df, preserve_neg_value_cols)
-
-    if 'label' in df.columns:
+    if md.COLUMN_LABEL in df.columns:
         df = add_label_category_column(df)
         df = add_label_is_attack_columns(df)
 
     return df
+
+
+def load_dataset(dataset_path: str,
+                 use_cols: List[str] = None,
+                 omit_cols: List[str] = None,
+                 nrows: int = None,
+                 transform_data: bool = True,
+                 preserve_neg_value_cols: list = None) -> pd.DataFrame:
+    """
+    Loads the dataset in CSV format from the given path.
+    All invalid values (`np.inf`, `-np.inf`, negative) are removed and replaced with `null` for easy imputation.
+    Negative values of columns specified in `preserve_neg_value_cols` will be preserved.
+
+    :param dataset_path: Path of the base directory containing all files of the dataset.
+    :param use_cols: Columns to load.
+    :param omit_cols: Columns to omit.
+    :param nrows: Number of rows to load per file.
+    :param transform_data: Indicates if data should be manipulated (removal of invalid and negative values).
+    :param preserve_neg_value_cols: Columns in which negative values are preserved.
+    :return: The dataset as a DataFrame.
+    """
+    def load_csv(path, cols):
+        files = glob.glob(os.path.join(path, '*.csv'))
+        return pd.concat([pd.read_csv(f, dtype=md.COLUMN_DTYPES, usecols=cols, nrows=nrows) for f in files])
+
+    return load_dataset_generic(load_df_fn=load_csv,
+                                dataset_path=dataset_path,
+                                use_cols=use_cols,
+                                omit_cols=omit_cols,
+                                preserve_neg_value_cols=preserve_neg_value_cols,
+                                transform_data=transform_data)
+
+
+def load_dataset_hdf(dataset_path: str,
+                     use_cols: List[str] = None,
+                     omit_cols: List[str] = None,
+                     preserve_neg_value_cols: list = None,
+                     transform_data: bool = True,
+                     key: str = None) -> pd.DataFrame:
+    """
+    Loads the dataset stored as a HDF file from the given path.
+    All invalid values (`np.inf`, `-np.inf`, negative) are removed and replaced with `null` for easy imputation.
+    Negative values of columns specified in `preserve_neg_value_cols` will be preserved.
+
+    :param dataset_path: Path of the base directory containing all files of the dataset.
+    :param use_cols: Columns to load.
+    :param omit_cols: Columns to omit.
+    :param preserve_neg_value_cols: Columns in which negative values are preserved.
+    :param transform_data: Indicates if data should be manipulated (removal of invalid and negative values).
+    :param key: Group identifier in the HDF store.
+    :return: The dataset as a DataFrame.
+    """
+    def load_hdf(path, cols):
+        return pd.read_hdf(path, key=key, columns=cols)
+
+    return load_dataset_generic(load_df_fn=load_hdf,
+                                dataset_path=dataset_path,
+                                use_cols=use_cols,
+                                omit_cols=omit_cols,
+                                preserve_neg_value_cols=preserve_neg_value_cols,
+                                transform_data=transform_data)

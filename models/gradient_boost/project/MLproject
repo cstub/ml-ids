@@ -1,0 +1,36 @@
+name: gradient_boost_model
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      train_path: path
+      val_path: path
+      test_path: path
+      output_path: path
+      artifact_path: path
+      use_val_set: {type: bool, default: True}
+      nr_iterations: {type: int, default: 1000}
+      tree_depth: {type: int, default: 6}
+      l2_reg: {type: float, default: 3.0}
+      border_count: {type: int, default: 254}
+      random_strength: {type: int, default: 1}
+      task_type: {type: str, default: 'GPU'}
+      nr_samples_attack_category: {type: int, default: 1000}
+      random_seed: {type: int, default: -1}
+    command: "pip install -e ../../../. &&
+              python train.py --train-path {train_path}
+                              --val-path {val_path}
+                              --test-path {test_path}
+                              --output-path {output_path}
+                              --artifact-path {artifact_path}
+                              --use-val-set {use_val_set}
+                              --random-seed {random_seed}
+                              --nr-iterations {nr_iterations}
+                              --tree-depth {tree_depth}
+                              --l2-reg {l2_reg}
+                              --border-count {border_count}
+                              --random-strength {random_strength}
+                              --task-type {task_type}
+                              --nr-samples-attack-category {nr_samples_attack_category}"
