@@ -1,0 +1,74 @@
+name: Train Model on AWS Sagemaker
+
+on:
+  push:
+    tags:
+    - 'm*'
+
+jobs:
+  train:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set Tag in Environment
+      id: set-aws-tag
+      run: |
+        if [ -z "$GITHUB_REF" ]
+        then
+          echo "No Tag given. Workflow may only be run on tagged commits."
+          exit 1
+        fi
+        echo "::set-output name=awstag::$(echo ${GITHUB_REF:10} | sed 's/[^a-zA-Z0-9]/-/g')"
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install click==7.0
+        pip install pandas==0.25.2
+        pip install sagemaker==1.44.3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ml-ids-train-sagemaker
+        IMAGE_TAG: ${{ github.sha }}
+        AWS_TAG: ${{ steps.set-aws-tag.outputs.awstag }}
+      run: |
+        docker build -f models/gradient_boost/envs/sagemaker/container/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Train the packaged model on AWS Sagemaker
+      id: train-model
+      env:
+        IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+        AWS_TAG: ${{ steps.set-aws-tag.outputs.awstag }}
+      run: |
+        make sagemaker_train_aws \
+          SAGEMAKER_TRAIN_CONFIG_PATH=models/gradient_boost/envs/sagemaker/configs/train-gpu.json \
+          SAGEMAKER_IMAGE_NAME=$IMAGE_NAME \
+          TRAIN_PARAM_PATH=models/gradient_boost/training_params.json \
+          JOB_ID="ml-ids-sagemaker-$AWS_TAG"

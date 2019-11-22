@@ -114,3 +114,18 @@ FEATURES_NO_VARIANCE = [
     "fwd_byts_b_avg",
     "fwd_pkts_b_avg"
 ]
+
+FEATURES_TO_IGNORE = [
+    'timestamp',
+    'dst_port',
+    'protocol'
+]
+
+FEATURES_PRESERVE_NEG_COLUMNS = [
+    'init_fwd_win_byts',
+    'init_bwd_win_byts'
+]
+
+COLUMN_LABEL = 'label'
+COLUMN_LABEL_CAT = 'label_cat'
+COLUMN_LABEL_IS_ATTACK = 'label_is_attack'

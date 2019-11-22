@@ -1,0 +1,1 @@
+{"class":"__main__.BinaryLabelMaker","timestamp":1568299022005,"sparkVersion":"2.4.4","uid":"BinaryLabelMaker_3b174e5e0c29","paramMap":{"inputCols":["label"],"outputCols":["label_is_attack"],"classLabel":"Benign"},"defaultParamMap":{}}

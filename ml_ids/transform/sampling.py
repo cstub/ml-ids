@@ -7,7 +7,7 @@ from typing import Tuple, List
 def upsample_minority_classes(X: np.ndarray,
                               y: pd.DataFrame,
                               min_samples: int,
-                              random_state: int,
+                              random_state: int = None,
                               cat_cols: List[int] = None,
                               n_jobs: int = 24) -> Tuple[np.ndarray, np.ndarray]:
     """
