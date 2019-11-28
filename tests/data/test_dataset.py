@@ -2,8 +2,8 @@ import pytest
 import pandas as pd
 import numpy as np
 import os
-import conf
-from data.dataset import load_dataset
+from ml_ids import conf
+from ml_ids.data.dataset import load_dataset
 
 
 @pytest.fixture
