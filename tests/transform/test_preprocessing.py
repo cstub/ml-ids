@@ -3,8 +3,8 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler
 
-import conf
-from data.dataset import load_dataset
+from ml_ids import conf
+from ml_ids.data.dataset import load_dataset
 from ml_ids.model_selection import split_x_y
 from ml_ids.transform.preprocessing import create_pipeline
 
