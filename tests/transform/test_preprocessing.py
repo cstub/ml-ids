@@ -21,7 +21,10 @@ def nan_value_count(x):
 
 
 def test_pipeline_must_impute_all_missing_values(feature_df):
-    pipeline, _ = create_pipeline(feature_df, imputer_strategy='mean', scaler=FunctionTransformer)
+    pipeline, _ = create_pipeline(feature_df,
+                                  imputer_strategy='mean',
+                                  scaler=FunctionTransformer,
+                                  scaler_args={'validate': False})
     transformed = pipeline.fit_transform(feature_df)
 
     assert nan_value_count(feature_df.values) != 0
@@ -70,7 +73,10 @@ def test_pipeline_must_reorder_columns(feature_df):
 
 
 def test_pipeline_must_impute_all_missing_values_with_mean(feature_df):
-    pipeline, get_col_names = create_pipeline(feature_df, imputer_strategy='mean', scaler=FunctionTransformer)
+    pipeline, get_col_names = create_pipeline(feature_df,
+                                              imputer_strategy='mean',
+                                              scaler=FunctionTransformer,
+                                              scaler_args={'validate': False})
     transformed = pipeline.fit_transform(feature_df)
 
     col_idx = np.where(get_col_names() == 'flow_duration')[0]
@@ -81,7 +87,10 @@ def test_pipeline_must_impute_all_missing_values_with_mean(feature_df):
 
 
 def test_pipeline_must_impute_all_missing_values_with_median(feature_df):
-    pipeline, get_col_names = create_pipeline(feature_df, imputer_strategy='median', scaler=FunctionTransformer)
+    pipeline, get_col_names = create_pipeline(feature_df,
+                                              imputer_strategy='median',
+                                              scaler=FunctionTransformer,
+                                              scaler_args={'validate': False})
     transformed = pipeline.fit_transform(feature_df)
 
     col_idx = np.where(get_col_names() == 'flow_duration')[0]
