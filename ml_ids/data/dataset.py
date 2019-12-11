@@ -1,9 +1,12 @@
+"""
+Utilities to manipulate the CIC-IDS-2018 dataset.
+"""
+from typing import List
+import os
+import glob
 import numpy as np
 import pandas as pd
-import glob
-import os
 import ml_ids.data.metadata as md
-from typing import List
 
 
 def remove_inf_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -120,6 +123,7 @@ def load_dataset(dataset_path: str,
     :param preserve_neg_value_cols: Columns in which negative values are preserved.
     :return: The dataset as a DataFrame.
     """
+
     def load_csv(path, cols):
         files = glob.glob(os.path.join(path, '*.csv'))
         return pd.concat([pd.read_csv(f, dtype=md.COLUMN_DTYPES, usecols=cols, nrows=nrows) for f in files])
@@ -151,6 +155,7 @@ def load_dataset_hdf(dataset_path: str,
     :param key: Group identifier in the HDF store.
     :return: The dataset as a DataFrame.
     """
+
     def load_hdf(path, cols):
         return pd.read_hdf(path, key=key, columns=cols)
 

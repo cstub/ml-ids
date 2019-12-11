@@ -1,3 +1,7 @@
+"""
+Custom callbacks for Keras models.
+"""
+# pylint: disable=import-error
 from tensorflow import keras
 from tensorflow.keras import callbacks
 

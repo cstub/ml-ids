@@ -1,3 +1,6 @@
+"""
+Metadata of the CIC-IDS-2018 dataset.
+"""
 COLUMN_DTYPES = {
     'dst_port': 'uint32',
     'protocol': 'uint8',

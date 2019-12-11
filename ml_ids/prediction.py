@@ -1,3 +1,8 @@
+"""
+Utilities to create predictions given a Scikit-learn estimator and a dataset containing input features.
+"""
+
+
 def predict_proba_positive(clf, X):
     """
     Performs predictions for a binary classification task given a scikit-learn model.

@@ -1,3 +1,7 @@
+"""
+Utilities for data pre-processing.
+"""
+from typing import List
 import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -6,7 +10,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.exceptions import NotFittedError
 from sklearn.base import BaseEstimator
-from typing import List
 
 
 def remove_outliers(df: pd.DataFrame, zscore: int = 3) -> pd.DataFrame:
@@ -45,6 +48,7 @@ def create_pipeline(df: pd.DataFrame,
     :return: A tuple containing the pipeline and a function returning the columns names after the pipeline has been
              fitted.
     """
+
     def create_get_feature_names(p, imp, scl, cat):
         def get_feature_names():
             if not hasattr(p, 'transformers_'):
@@ -63,7 +67,7 @@ def create_pipeline(df: pd.DataFrame,
 
     cat_features = cat_cols if cat_cols else []
     num_features = [c for c in df.select_dtypes(include=[np.number]).columns.values if c not in cat_features]
-    imp_features = []
+    imp_features: List[str] = []
 
     if imputer_strategy is not None:
         imp_features = imputer_cols if imputer_cols else num_features

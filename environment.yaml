@@ -9,9 +9,11 @@ dependencies:
   - cloudpickle=1.2.2=py_0
   - imbalanced-learn=0.5.0=py_0
   - matplotlib=3.1.1=py37_1
+  - mypy=0.750
   - numpy=1.17.2=py37h95a1406_0
   - pandas=0.25.2=py37hb3f55d8_0
   - pip=19.2.3=py37_0
+  - pylint=2.4.4
   - pytest=5.2.1=py37_0
   - pytest-runner=5.1=py_0
   - python=3.7.3=h33d41f4_1
