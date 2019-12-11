@@ -1,9 +1,13 @@
+"""
+Visualization utilities for IPython Notebooks.
+"""
+# pylint: disable=import-error
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, classification_report, average_precision_score, precision_recall_curve
 from matplotlib.ticker import MaxNLocator
+from sklearn.metrics import confusion_matrix, classification_report, average_precision_score, precision_recall_curve
 from IPython.display import display
 
 
@@ -114,6 +118,9 @@ def plot_confusion_matrix(y_true,
 
 
 def identity(x):
+    """
+    Identity function.
+    """
     return x
 
 
@@ -127,7 +134,7 @@ def plot_threshold(pred_train, pred_val, threshold, size=(15, 5), transform=iden
     :param size: Size of the plot.
     :param transform: Value transformation.
     """
-    fig, ax = plt.subplots(figsize=size)
+    _, ax = plt.subplots(figsize=size)
     sns.distplot(transform(pred_train.rec_error.values), hist=False, ax=ax, label='Train Benign')
     sns.distplot(transform(pred_val[pred_val.y_true == 0].rec_error.values), hist=False, ax=ax,
                  label='Validation Benign')

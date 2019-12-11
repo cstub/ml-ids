@@ -1,3 +1,6 @@
+"""
+Utility functions to evaluate Keras models.
+"""
 PREDICT_BATCH_SIZE = 16384
 
 

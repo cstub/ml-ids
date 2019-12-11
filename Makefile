@@ -9,6 +9,18 @@ clean:
 	-rm -r -f build
 	mkdir build
 
+test:
+	python -m pytest tests
+
+lint:
+	pylint ml_ids
+
+lint-errors:
+	pylint ml_ids -E
+
+typecheck:
+	mypy ml_ids
+
 split_dataset:
 	mkdir -p dataset
 	python ./ml_ids/data/split_dataset.py \

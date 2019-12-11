@@ -1,8 +1,11 @@
-import numpy as np
+"""
+Utility functions for model selection of Keras models.
+"""
 import gc
+from typing import Tuple
+import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from tensorflow import keras
-from typing import Tuple
 
 
 def cross_val_train(fit_fn,

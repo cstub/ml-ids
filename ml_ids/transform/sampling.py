@@ -1,3 +1,6 @@
+"""
+Utilities to modify the amount of samples of specific categories in a datasets.
+"""
 import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE, SMOTENC
@@ -21,22 +24,22 @@ def upsample_minority_classes(X: np.ndarray,
     :param n_jobs: Number of threads to use.
     :return: A tuple containing the up-sampled X and y values.
     """
-    cnts = y.label_cat.value_counts()
+    counts = y.label_cat.value_counts()
     sample_dict = {}
 
     for i in np.unique(y.label_cat):
-        sample_dict[i] = max(cnts[i], min_samples)
+        sample_dict[i] = max(counts[i], min_samples)
 
     if cat_cols:
-        sm = SMOTENC(sampling_strategy=sample_dict,
-                     categorical_features=cat_cols,
-                     n_jobs=n_jobs,
-                     random_state=random_state)
+        smote = SMOTENC(sampling_strategy=sample_dict,
+                        categorical_features=cat_cols,
+                        n_jobs=n_jobs,
+                        random_state=random_state)
     else:
-        sm = SMOTE(sampling_strategy=sample_dict, n_jobs=n_jobs, random_state=random_state)
+        smote = SMOTE(sampling_strategy=sample_dict, n_jobs=n_jobs, random_state=random_state)
 
-    X_s, y_s = sm.fit_resample(X, y.label_cat)
-    return X_s, y_s
+    x_s, y_s = smote.fit_resample(X, y.label_cat)
+    return x_s, y_s
 
 
 def create_sample_dict(df: pd.DataFrame,
@@ -55,10 +58,10 @@ def create_sample_dict(df: pd.DataFrame,
 
     sample_dict = df.label_cat.value_counts().to_dict()
 
-    for l in sample_dict.keys():
-        requested_samples = samples_per_label[l] if l in samples_per_label else default_nr_samples
-        existing_samples = sample_dict[l] if l in sample_dict else 0
-        sample_dict[l] = min(requested_samples, existing_samples)
+    for label in sample_dict.keys():
+        requested_samples = samples_per_label[label] if label in samples_per_label else default_nr_samples
+        existing_samples = sample_dict[label] if label in sample_dict else 0
+        sample_dict[label] = min(requested_samples, existing_samples)
 
     return sample_dict
 

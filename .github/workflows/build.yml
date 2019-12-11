@@ -16,8 +16,20 @@ jobs:
         conda activate ml-ids
         pip install -e .
 
+    - name: Static Type Check
+      run: |
+        source /usr/share/miniconda/etc/profile.d/conda.sh
+        conda activate ml-ids
+        make typecheck
+
+    - name: Code Quality Check
+      run: |
+        source /usr/share/miniconda/etc/profile.d/conda.sh
+        conda activate ml-ids
+        make lint-errors
+
     - name: Test with pytest
       run: |
         source /usr/share/miniconda/etc/profile.d/conda.sh
         conda activate ml-ids
-        python -m pytest tests
+        make test

@@ -1,8 +1,11 @@
+"""
+Utilities for machine learning model selection.
+"""
+from typing import Tuple, List
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_curve
-from typing import Tuple, List
 
 
 def train_val_test_split(df: pd.DataFrame,
@@ -64,5 +67,5 @@ def best_precision_for_target_recall(y_true, y_pred_score, target_recall):
     :param target_recall: Target recall.
     :return: Decision boundary.
     """
-    precisions, recalls, thresholds = precision_recall_curve(y_true, y_pred_score)
+    _, recalls, thresholds = precision_recall_curve(y_true, y_pred_score)
     return thresholds[np.argmin(recalls >= target_recall)]

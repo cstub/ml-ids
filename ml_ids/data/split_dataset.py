@@ -1,7 +1,10 @@
-import click
+"""
+CLI to split a single dataset into train/val/test sub-datasets.
+"""
 import os
-import logging
 import sys
+import logging
+import click
 import pandas as pd
 import ml_ids.data.metadata as md
 from ml_ids.data.dataset import load_dataset
@@ -29,7 +32,10 @@ logging.basicConfig(
 @click.option('--random-seed', type=int,
               help='Random seed.')
 def split_dataset(dataset_path, output_path, val_size, test_size, nrows, random_seed):
-    logging.info('Loading dataset from "{}"...'.format(dataset_path))
+    """
+    Runs the CLI.
+    """
+    logging.info('Loading dataset from "%s"...', dataset_path)
 
     dataset = load_dataset(dataset_path=dataset_path, transform_data=False, nrows=nrows)
 
@@ -50,16 +56,30 @@ def split_dataset(dataset_path, output_path, val_size, test_size, nrows, random_
 
 
 def remove_extra_labels(dataset: pd.DataFrame):
+    """
+    Removes unused target labels.
+    :param dataset: Input dataset as Pandas DataFrame.
+    :return: Dataset without unused target labels.
+    """
     return dataset.drop(columns=[md.COLUMN_LABEL_CAT, md.COLUMN_LABEL_IS_ATTACK])
 
 
 def save_dataset(dataset: pd.DataFrame, path: str, ds_type: str):
+    """
+    Stores the given dataset in hdf format on the specified path.
+
+    :param dataset: Dataset as Pandas DataFrame.
+    :param path: Target path to store the dataset.
+    :param ds_type: Dataset type.
+    :return: None
+    """
     file_path = os.path.join(path, '{}.h5'.format(ds_type))
 
-    logging.info('Storing dataset "{}" of size {} to "{}"'.format(ds_type, len(dataset), file_path))
+    logging.info('Storing dataset "%s" of size %d to "%s"', ds_type, len(dataset), file_path)
 
     dataset.to_hdf(file_path, 'ids_data', format='t', complevel=5, complib='zlib')
 
 
 if __name__ == '__main__':
+    # pylint: disable=no-value-for-parameter
     split_dataset()
